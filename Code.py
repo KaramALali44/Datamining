@@ -1,14 +1,16 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder, StandardScaler
+from imblearn.under_sampling import RandomUnderSampler
 from lightgbm import LGBMClassifier
 from sklearn.metrics import roc_auc_score
 train = pd.read_csv('train.csv')
 test = pd.read_csv('test.csv')
 X = train.drop(columns=['id', 'Response'])
 y = train['Response']
-X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.1599, random_state=37)
+rus = RandomUnderSampler(random_state=42)
+X_resampled, y_resampled = rus.fit_resample(X, y)
 
+X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.1599, random_state=37)
 model = LGBMClassifier(
     num_leaves=50,
     max_depth=10,
